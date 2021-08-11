@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Server Sent Event</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+  <div class="container">
+    <div id="sebarulang" class="channel">
+      <div class="name">Sebarulang</div>
+      <div class="subscribers">0</div>
+      <button onclick="subscribe('sebarulang')">Subscribe</button>
+    </div>
+
+    <div id="arsanusa" class="channel">
+      <div class="name">Arsa Nusa</div>
+      <div class="subscribers">0</div>
+      <button onclick="subscribe('arsanusa')">Subscribe</button>
+    </div>
+
+    <div id="astra" class="channel">
+      <div class="name">Astra</div>
+      <div class="subscribers">0</div>
+      <button onclick="subscribe('astra')">Subscribe</button>
+    </div>
+  </div>
+
+  <script>
+    async function subscribe(companyId) {
+      const connection = await fetch(`subscribe/${companyId}`)
+      const response = await connection.json()
+      console.log(response)
+    }
+
+    const eventSource = new EventSource("/sse")
+    eventSource.addEventListener("message", function (e) {
+      try {
+        const companies = JSON.parse(e.data)
+        for (companyId in companies) {
+          console.log(`#${companyId}`)
+          document.querySelector(`#${companyId} .subscribers`).innerHTML = companies[companyId].subscribers
+        }
+      } catch (error) {
+        console.log(e)
+      }
+    })
+  </script>
+</body>
+
+</html>
